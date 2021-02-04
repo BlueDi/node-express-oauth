@@ -72,22 +72,25 @@ app.get('/authorize', (req, res) => {
         : res.status(401).end();
 })
 
-function approved(res, request, userName) {
+function redirect(req, res, request, userName) {
     const authorizationId = randomString();
     authorizationCodes[authorizationId] = {
         clientReq: request,
         userName: userName
     };
-    res.end();
+    const myURL = new URL(request.redirect_uri);
+    myURL.searchParams.set('code', authorizationId);
+    myURL.searchParams.set('state', request.state);
+    res.redirect(myURL);
 }
 
 app.post('/approve', (req, res) => {
     const {userName, password, requestId} = req.body;
-    const isUserValid = users[userName] === password;
+    const isUserValid = userName && password && users[userName] === password;
     const request = requests[requestId];
     delete requests[requestId];
     isUserValid && (!requestId || request)
-        ? approved(res, request, userName)
+        ? redirect(req, res, request, userName)
         : res.status(401).end();
 });
 
