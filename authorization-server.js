@@ -97,7 +97,7 @@ app.post('/approve', (req, res) => {
 function createToken(res, obj) {
     const payload = {userName: obj.userName, scope: obj.clientReq.scope};
     const token = jwt.sign(payload, config.privateKey, {algorithm: 'RS256'});
-    res.json(token).end();
+    res.json({access_token: token, token_type: "Bearer"}).end();
 }
 
 function validateAuthorization(res, authorization, code) {
