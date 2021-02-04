@@ -73,9 +73,11 @@ app.get('/authorize', (req, res) => {
 })
 
 app.post('/approve', (req, res) => {
-    const {userName, password, requestID} = req.body;
+    const {userName, password, requestId} = req.body;
     const isUserValid = users[userName] === password;
-    isUserValid
+    const request = requests[requestId];
+    delete requests[requestId];
+    isUserValid && (!requestId || request)
         ? res.end()
         : res.status(401).end();
 });
