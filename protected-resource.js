@@ -32,7 +32,10 @@ app.use(bodyParser.urlencoded({ extended: true }))
 Your code here
 */
 app.get('/user-info', (req, res) => {
-	res.end();
+	const {authorization} = req.headers;
+	authorization
+		? res.end()
+		: res.status(401).end();
 })
 
 const server = app.listen(config.port, "localhost", function () {
