@@ -95,7 +95,10 @@ app.post('/approve', (req, res) => {
 });
 
 app.post('/token', (req, res) => {
-    res.end();
+    const {authorization} = req.headers;
+    authorization
+        ? res.end()
+        : res.status(401).end();
 });
 
 const server = app.listen(config.port, "localhost", function () {
