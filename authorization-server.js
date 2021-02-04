@@ -72,7 +72,13 @@ app.get('/authorize', (req, res) => {
         : res.status(401).end();
 })
 
-app.post('/approve', (req, res) => res.end());
+app.post('/approve', (req, res) => {
+    const {userName, password, requestID} = req.body;
+    const isUserValid = users[userName] === password;
+    isUserValid
+        ? res.end()
+        : res.status(401).end();
+});
 
 const server = app.listen(config.port, "localhost", function () {
     var host = server.address().address
