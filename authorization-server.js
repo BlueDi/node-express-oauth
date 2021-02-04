@@ -48,16 +48,22 @@ app.set("view engine", "ejs")
 app.set("views", "assets/authorization-server")
 app.use(timeout)
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({extended: true}))
 
 /*
 Your code here
 */
+function authorized(req, res) {
+	const requestID = randomString();
+	requests[requestID] = req.query;
+	res.end();
+}
+
 app.get('/authorize', (req, res) => {
 	const client = clients[req.query.client_id];
 	const scope = req.query.scope;
-	return client && scope && containsAll(client.scopes, scope.split(" "))
-		? res.end()
+	client && scope && containsAll(client.scopes, scope.split(" "))
+		? authorized(req, res)
 		: res.status(401).end();
 })
 
