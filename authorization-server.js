@@ -94,10 +94,19 @@ app.post('/approve', (req, res) => {
         : res.status(401).end();
 });
 
+function token(res, authorization) {
+    const {clientId, clientSecret} = decodeAuthCredentials(authorization);
+    const client = clients[clientId];
+    const isClientValid = clientId && clientSecret && client && client.clientSecret === clientSecret;
+    isClientValid
+        ? res.end()
+        : res.status(401).end();
+}
+
 app.post('/token', (req, res) => {
     const {authorization} = req.headers;
     authorization
-        ? res.end()
+        ? token(res, authorization)
         : res.status(401).end();
 });
 
