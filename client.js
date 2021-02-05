@@ -49,7 +49,17 @@ function requestAccessToken(res, code) {
             code: code
         }
     }
-    axios(params).then(response => res.end());
+    axios(params).then(response => {
+        const {access_token} = response.data;
+        const paramsGet = {
+            method: "GET",
+            url: config.userInfoEndpoint,
+            headers: {
+                authorization: "bearer " + access_token
+            }
+        }
+        return axios(paramsGet);
+    });
 }
 
 app.get('/callback', (req, res) => {
