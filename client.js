@@ -1,18 +1,18 @@
 const express = require("express")
 const bodyParser = require("body-parser")
 const axios = require("axios").default
-const { randomString, timeout } = require("./utils")
+const {randomString, timeout} = require("./utils")
 
 const config = {
-	port: 9000,
+    port: 9000,
 
-	clientId: "my-client",
-	clientSecret: "zETqHgl0d7ThysUqPnaFuLOmG1E=",
-	redirectUri: "http://localhost:9000/callback",
+    clientId: "my-client",
+    clientSecret: "zETqHgl0d7ThysUqPnaFuLOmG1E=",
+    redirectUri: "http://localhost:9000/callback",
 
-	authorizationEndpoint: "http://localhost:9001/authorize",
-	tokenEndpoint: "http://localhost:9001/token",
-	userInfoEndpoint: "http://localhost:9002/user-info",
+    authorizationEndpoint: "http://localhost:9001/authorize",
+    tokenEndpoint: "http://localhost:9001/token",
+    userInfoEndpoint: "http://localhost:9002/user-info",
 }
 let state = ""
 
@@ -21,30 +21,36 @@ app.set("view engine", "ejs")
 app.set("views", "assets/client")
 app.use(timeout)
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({extended: true}))
 
 /*
 Your code here
 */
 app.get('/authorize', (req, res) => {
-	state = randomString();
-	res.status(408).end();
+    state = randomString();
+    const myURL = new URL(config.authorizationEndpoint);
+    myURL.searchParams.set("response_type", "code");
+    myURL.searchParams.set("client_id", config.clientId);
+    myURL.searchParams.set("redirect_uri", config.redirectUri);
+    myURL.searchParams.set("scope", "permission:name permission:date_of_birth");
+    myURL.searchParams.set('state', state);
+    res.redirect(myURL);
 })
 
 const server = app.listen(config.port, "localhost", function () {
-	var host = server.address().address
-	var port = server.address().port
+    var host = server.address().address
+    var port = server.address().port
 })
 
 // for testing purposes
 
 module.exports = {
-	app,
-	server,
-	getState() {
-		return state
-	},
-	setState(s) {
-		state = s
-	},
+    app,
+    server,
+    getState() {
+        return state
+    },
+    setState(s) {
+        state = s
+    },
 }
