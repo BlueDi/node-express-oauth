@@ -38,7 +38,10 @@ app.get('/authorize', (req, res) => {
 })
 
 app.get('/callback', (req, res) => {
-    res.end();
+    const {state: reqState} = req.query;
+    reqState === state
+        ? res.end()
+        : res.status(403).end();
 })
 
 const server = app.listen(config.port, "localhost", function () {
