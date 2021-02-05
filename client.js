@@ -27,7 +27,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 Your code here
 */
 app.get('/authorize', (req, res) => {
-	res.end();
+	state = randomString();
+	res.status(408).end();
 })
 
 const server = app.listen(config.port, "localhost", function () {
