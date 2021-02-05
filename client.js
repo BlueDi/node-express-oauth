@@ -37,10 +37,25 @@ app.get('/authorize', (req, res) => {
     res.redirect(myURL);
 })
 
+function requestAccessToken(res, code) {
+    const params = {
+        method: "POST",
+        url: config.tokenEndpoint,
+        auth: {
+            username: config.clientId,
+            password: config.clientSecret
+        },
+        data: {
+            code: code
+        }
+    }
+    axios(params).then(response => res.end());
+}
+
 app.get('/callback', (req, res) => {
-    const {state: reqState} = req.query;
+    const {state: reqState, code} = req.query;
     reqState === state
-        ? res.end()
+        ? requestAccessToken(res, code)
         : res.status(403).end();
 })
 
