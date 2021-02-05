@@ -35,8 +35,23 @@ Your code here
 function verifyJWT(res, authorization) {
     const token = authorization.slice(7);
     jwt.verify(token, config.publicKey, {algorithm: ['RS256']}, (err, decoded) => {
-        decoded
-            ? res.end()
+        if (typeof decoded === "undefined") {
+            res.status(401).end();
+        }
+        const {userName, scope} = decoded || {userName: "", scope: ""};
+        const scopes = scope.split(" ") || [];
+        const user = users[userName];
+        const params = scopes.reduce((accumulator, currentValue) => {
+            const currentScope = currentValue.split(":");
+            if (currentScope[0] === "permission") {
+                const newParam = {};
+                newParam[currentScope[1]] = user[currentScope[1]];
+                accumulator = {...accumulator, ...newParam};
+            }
+            return accumulator;
+        }, {});
+        user
+            ? res.json(params).end()
             : res.status(401).end();
     });
 }
